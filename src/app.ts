@@ -1,8 +1,10 @@
-// Import the framework and instantiate it
+// Require the framework and instantiate it
+
+// ESM
 import Fastify from "fastify";
 import "dotenv/config";
-import cors from "@fastify/cors";
-import helmet from "@fastify/helmet";
+import fastifyCors from "@fastify/cors";
+import fastifyHelmet from "@fastify/helmet";
 
 const PORT = parseInt(process.env.PORT ?? "3000");
 
@@ -10,37 +12,38 @@ const fastify = Fastify({
   logger: true,
 });
 
-fastify.register(cors, {
+fastify.register(fastifyCors, {
   origin: true,
   credentials: true,
 });
 
-fastify.register(helmet, {
+fastify.register(fastifyHelmet, {
   contentSecurityPolicy: false,
 });
 
 // Declare a route
 fastify.get("/", async (request, reply) => {
   return {
-    message: "E-commerce Syntax Wear API",
+    message: "E-commerce SyntaxWear API",
     version: "1.0.0",
-    status: "running",
+    status: "Running",
   };
 });
 
 fastify.get("/health", async (request, reply) => {
   return {
-    status: "ok",
-    timestamp: Date().toString(),
+    status: "OK",
+    timestamp: new Date().toISOString(),
   };
 });
 
 // Run the server!
-try {
-  fastify.listen({ port: PORT });
-} catch (err) {
-  fastify.log.error(err);
-  process.exit(1);
-}
+fastify.listen({ port: PORT }, function (err, address) {
+  if (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+  // Server is now listening on ${address}
+});
 
 export default fastify;
