@@ -25,6 +25,7 @@ model Product {
   slug        String   @unique
   description String?
   price       Decimal
+  colors      Json?
   images      Json?
   sizes       Json?
   stock       Int      @default(0)
