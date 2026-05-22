@@ -1,11 +1,10 @@
-// Require the framework and instantiate it
-
-// ESM
 import Fastify from "fastify";
 import "dotenv/config";
 import fastifyCors from "@fastify/cors";
 import fastifyHelmet from "@fastify/helmet";
 import productRoutes from "./routes/products.routes";
+import swagger from "@fastify/swagger";
+import scalar from "@scalar/fastify-api-reference";
 
 const PORT = parseInt(process.env.PORT ?? "3000");
 
@@ -20,6 +19,40 @@ fastify.register(fastifyCors, {
 
 fastify.register(fastifyHelmet, {
   contentSecurityPolicy: false,
+});
+
+fastify.register(swagger, {
+  openapi: {
+    openapi: "3.0.0",
+    info: {
+      title: "E-commerce SyntaxWear API",
+      description: "API para o e-commerce SyntaxWear",
+      version: "1.0.0",
+    },
+    servers: [
+      {
+        url: `http://localhost:${PORT}`,
+        description: "Servidor de desenvolvimento local",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          description: "Autenticação usando JSON Web Tokens (JWT)",
+        },
+      },
+    },
+  },
+});
+
+fastify.register(scalar, {
+  routePrefix: "/api-docs",
+  configuration: {
+    theme: "moon",
+  },
 });
 
 fastify.register(productRoutes, { prefix: "/products" });
