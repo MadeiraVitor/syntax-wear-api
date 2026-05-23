@@ -16,8 +16,8 @@ export interface AuthRequest {
 export interface RegisterRequest extends AuthRequest {
   firstName: string;
   lastName: string;
-  cpf?: string;
-  birthDate?: string;
-  phone?: string;
+  cpf?: string | undefined;
+  birthDate?: string | undefined;
+  phone?: string | undefined;
   role?: 'USER' | 'ADMIN';
 }
