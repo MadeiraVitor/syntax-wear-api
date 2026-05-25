@@ -1,9 +1,13 @@
 import type { FastifyInstance } from "fastify";
-import { getProduct, listProducts } from "../controllers/products.controller";
+import {
+  createNewProduct,
+  getProduct,
+  listProducts,
+} from "../controllers/products.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  fastify.addHook("onRequest", authenticate);
+  // fastify.addHook("onRequest", authenticate);
   fastify.get(
     "/",
     {
@@ -140,5 +144,48 @@ export default async function productRoutes(fastify: FastifyInstance) {
       },
     },
     getProduct,
+  );
+
+  fastify.post(
+    "/",
+    {
+      schema: {
+        tags: ["Products"],
+        description: "Cria um novo produto",
+        required: ["name", "description", "price", "stock", "slug", "active"],
+        body: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+            price: { type: "number" },
+            stock: { type: "number" },
+            sizes: {
+              type: "array",
+              items: { type: "string" },
+            },
+            images: {
+              type: "array",
+              items: { type: "string" },
+            },
+            colors: {
+              type: "array",
+              items: { type: "string" },
+            },
+            active: { type: "boolean" },
+          },
+        },
+        response: {
+          201: {
+            description: "Produto criado com sucesso",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    createNewProduct,
   );
 }
