@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import {
   createNewProduct,
+  deleteExistingProduct,
   getProduct,
   listProducts,
   updateExistingProduct,
@@ -299,5 +300,53 @@ export default async function productRoutes(fastify: FastifyInstance) {
       },
     },
     updateExistingProduct,
+  );
+
+  fastify.delete(
+    "/:id",
+    {
+      schema: {
+        tags: ["Products"],
+        description: "Deleta um produto pelo ID",
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "number", description: "ID do produto" },
+          },
+          required: ["id"],
+        },
+        response: {
+          200: {
+            description: "Produto deletado com sucesso",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          400: {
+            description: "Requisição inválida",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          404: {
+            description: "Produto não encontrado",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          500: {
+            description: "Erro interno do servidor",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    deleteExistingProduct,
   );
 }

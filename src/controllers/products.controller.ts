@@ -2,12 +2,14 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { CreateProduct, ProductFilters, UpdateProduct } from "../types";
 import {
   createProduct,
+  deleteProduct,
   getProductById,
   getProducts,
   updateProduct,
 } from "../services/products.service";
 import {
   createProductSchema,
+  deleteProductSchema,
   productFiltersSchema,
   updateProductSchema,
 } from "../utils/validators";
@@ -69,4 +71,17 @@ export const updateExistingProduct = async (
   const product = await updateProduct(Number(id), validate);
 
   reply.status(200).send(product);
+};
+
+export const deleteExistingProduct = async (
+  request: FastifyRequest<{ Params: { id: number } }>,
+  reply: FastifyReply,
+) => {
+  const { id } = request.params;
+
+  const validate = deleteProductSchema.parse({ id });
+
+  await deleteProduct(validate.id);
+
+  reply.status(200).send({ message: "Produto deletado com sucesso" });
 };
