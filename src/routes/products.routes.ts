@@ -6,10 +6,10 @@ import {
   listProducts,
   updateExistingProduct,
 } from "../controllers/products.controller";
-//import { authenticate } from "../middlewares/auth.middleware";
+import { authenticate } from "../middlewares/auth.middleware";
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  // fastify.addHook("onRequest", authenticate);
+  fastify.addHook("onRequest", authenticate);
   fastify.get(
     "/",
     {
