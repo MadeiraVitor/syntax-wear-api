@@ -1,5 +1,56 @@
 import { prisma } from "../lib/prisma";
 
+const categories = [
+  {
+    name: "Camisetas",
+    slug: "camisetas",
+    description: "Camisetas casuais e confortáveis para o dia a dia",
+    active: true,
+  },
+  {
+    name: "Moletons",
+    slug: "moletons",
+    description: "Moletons quentes e estilosos",
+    active: true,
+  },
+  {
+    name: "Calças",
+    slug: "calcas",
+    description: "Calças e jeans para todas as ocasiões",
+    active: true,
+  },
+  {
+    name: "Shorts",
+    slug: "shorts",
+    description: "Shorts esportivos e casuais",
+    active: true,
+  },
+  {
+    name: "Acessórios",
+    slug: "acessorios",
+    description: "Cintos, bonés, mochilas e mais",
+    active: true,
+  },
+  {
+    name: "Vestidos",
+    slug: "vestidos",
+    description: "Vestidos para diversas ocasiões",
+    active: true,
+  },
+  {
+    name: "Calçados",
+    slug: "calcados",
+    description: "Tênis, sapatos e sandálias",
+    active: true,
+  },
+  {
+    name: "Meias",
+    slug: "meias",
+    description: "Meias confortáveis em diversos estilos",
+    active: true,
+  },
+];
+
 const products = [
   {
     name: "Classic Tee",
@@ -118,13 +169,66 @@ const products = [
 
 async function main() {
   try {
-    const res = await prisma.product.createMany({
-      data: products,
-      skipDuplicates: true,
+    // Limpar dados existentes
+    await prisma.product.deleteMany({});
+    await prisma.category.deleteMany({});
+    console.log("🗑️  Dados antigos removidos");
+
+    // Criar categorias
+    const createdCategories = await prisma.category.createMany({
+      data: categories,
+    });
+    console.log(`✅ ${createdCategories.count} categorias criadas`);
+
+    // Buscar categorias criadas para obter IDs
+    const camisetas = await prisma.category.findUnique({
+      where: { slug: "camisetas" },
+    });
+    const moletons = await prisma.category.findUnique({
+      where: { slug: "moletons" },
+    });
+    const calcas = await prisma.category.findUnique({
+      where: { slug: "calcas" },
+    });
+    const shorts = await prisma.category.findUnique({
+      where: { slug: "shorts" },
+    });
+    const acessorios = await prisma.category.findUnique({
+      where: { slug: "acessorios" },
+    });
+    const vestidos = await prisma.category.findUnique({
+      where: { slug: "vestidos" },
+    });
+    const calcados = await prisma.category.findUnique({
+      where: { slug: "calcados" },
+    });
+    const meias = await prisma.category.findUnique({
+      where: { slug: "meias" },
+    });
+
+    // Adicionar categoryId aos produtos
+    const productsWithCategory = [
+      { ...products[0], categoryId: camisetas!.id }, // Classic Tee
+      { ...products[1], categoryId: moletons!.id }, // Vintage Hoodie
+      { ...products[2], categoryId: calcas!.id }, // Slim Jeans
+      { ...products[3], categoryId: shorts!.id }, // Sport Shorts
+      { ...products[4], categoryId: acessorios!.id }, // Leather Belt
+      { ...products[5], categoryId: vestidos!.id }, // Summer Dress
+      { ...products[6], categoryId: calcados!.id }, // Running Shoes
+      { ...products[7], categoryId: acessorios!.id }, // Beanie Cap
+      { ...products[8], categoryId: acessorios!.id }, // Canvas Backpack
+      { ...products[9], categoryId: meias!.id }, // Striped Socks
+    ];
+
+    // Criar produtos
+    const createdProducts = await prisma.product.createMany({
+      data: productsWithCategory,
     });
     console.log(
-      `✅ Seed finalizado: ${res.count} produtos inseridos (skipDuplicates: true)`,
+      `✅ ${createdProducts.count} produtos criados com categorias vinculadas`,
     );
+
+    console.log("🎉 Seed finalizado com sucesso!");
   } catch (error) {
     console.error("❌ Erro no seed:", error);
     process.exit(1);
