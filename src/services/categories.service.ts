@@ -99,3 +99,23 @@ export const updateCategory = async (id: number, data: UpdateCategory) => {
 
   return updatedCategory;
 };
+
+export const deleteCategory = async (id: number) => {
+  const existingCategory = await prisma.category.findUnique({
+    where: { id },
+  });
+
+  if (!existingCategory) {
+    throw new Error("Categoria não encontrada");
+  }
+
+  await prisma.product.updateMany({
+    where: { categoryId: id },
+    data: { active: false },
+  });
+
+  await prisma.category.update({
+    where: { id },
+    data: { active: false },
+  });
+};

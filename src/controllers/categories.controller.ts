@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { CategoryFilters, CreateCategory, UpdateCategory } from "../types";
 import {
   createCategory,
+  deleteCategory,
   getCategories,
   getCategoryById,
   updateCategory,
@@ -9,6 +10,7 @@ import {
 import {
   categoryFiltersSchema,
   createCategorySchema,
+  deleteCategorySchema,
   updateCategorySchema,
 } from "../utils/validators";
 import slugify from "slugify";
@@ -69,4 +71,17 @@ export const updateExistingCategory = async (
   const category = await updateCategory(Number(id), validate);
 
   reply.status(200).send(category);
+};
+
+export const deleteExistingCategory = async (
+  request: FastifyRequest<{ Params: { id: number } }>,
+  reply: FastifyReply,
+) => {
+  const { id } = request.params;
+
+  const validate = deleteCategorySchema.parse({ id });
+
+  await deleteCategory(validate.id);
+
+  reply.status(200).send({ message: "Categoria desativada com sucesso" });
 };
