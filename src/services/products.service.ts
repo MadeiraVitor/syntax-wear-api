@@ -6,6 +6,7 @@ export const getProducts = async (filter: ProductFilters) => {
     minPrice,
     maxPrice,
     search,
+    categoryId,
     sortBy,
     sortOrder,
     page = 1,
@@ -13,6 +14,11 @@ export const getProducts = async (filter: ProductFilters) => {
   } = filter;
 
   const where: any = {};
+
+  // Filtro por categoria
+  if (categoryId) {
+    where.categoryId = categoryId;
+  }
 
   // Filtro por preço
   if (minPrice !== undefined || maxPrice !== undefined) {
@@ -61,6 +67,9 @@ export const getProducts = async (filter: ProductFilters) => {
         orderBy: Object.keys(orderBy).length > 0 ? orderBy : undefined,
         skip,
         take,
+        include: {
+          category: true,
+        },
       }),
       prisma.product.count({ where }),
     ]);
@@ -81,6 +90,9 @@ export const getProducts = async (filter: ProductFilters) => {
 export const getProductById = async (id: number) => {
   const product = await prisma.product.findUnique({
     where: { id },
+    include: {
+      category: true,
+    },
   });
 
   if (!product) {

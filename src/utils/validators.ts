@@ -25,6 +25,12 @@ export const productFiltersSchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).optional(),
 });
 
+export const categoryFiltersSchema = z.object({
+  page: z.coerce.number().int().min(1, "Page deve ser >= 1").optional(),
+  limit: z.coerce.number().int().min(1, "Limit deve ser >= 1").optional(),
+  search: z.string().trim().min(1, "Search não pode ser vazio").optional(),
+});
+
 export const createProductSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().min(1, "Descrição é obrigatória"),
@@ -35,6 +41,7 @@ export const createProductSchema = z.object({
   stock: z.coerce.number().int().min(0, "Stock deve ser >= 0"),
   active: z.boolean(),
   images: z.array(z.string()).default([]),
+  categoryId: z.coerce.number().int().min(1, "CategoryId é obrigatório"),
 });
 
 export const updateProductSchema = z.object({
@@ -47,6 +54,10 @@ export const updateProductSchema = z.object({
   stock: z.coerce.number().int().min(0, "Stock deve ser >= 0").optional(),
   active: z.boolean().optional(),
   images: z.array(z.string()).optional(),
+  categoryId: z.coerce
+    .number()
+    .int()
+    .optional(),
 });
 
 export const deleteProductSchema = z.object({

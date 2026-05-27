@@ -9,7 +9,7 @@ import {
 import { authenticate } from "../middlewares/auth.middleware";
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  fastify.addHook("onRequest", authenticate);
+  //fastify.addHook("onRequest", authenticate);
   fastify.get(
     "/",
     {
@@ -38,33 +38,55 @@ export default async function productRoutes(fastify: FastifyInstance) {
         },
         response: {
           200: {
-            description: "Lista de produtos",
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                id: { type: "number" },
-                name: { type: "string" },
-                price: { type: "number" },
-                createdAt: { type: "string", format: "date-time" },
-                description: { type: "string" },
-                stock: { type: "number" },
-                sizes: {
-                  type: "array",
-                  items: { type: "string" },
+            description: "Lista paginada de produtos",
+            type: "object",
+            properties: {
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    name: { type: "string" },
+                    price: { type: "number" },
+                    createdAt: { type: "string", format: "date-time" },
+                    description: { type: "string" },
+                    stock: { type: "number" },
+                    sizes: {
+                      type: "array",
+                      items: { type: "string" },
+                    },
+                    images: {
+                      type: "array",
+                      items: { type: "string", format: "uri" },
+                    },
+                    colors: {
+                      type: "array",
+                      items: { type: "string" },
+                    },
+                    slug: { type: "string" },
+                    active: { type: "boolean" },
+                    updatedAt: { type: "string", format: "date-time" },
+                    categoryId: { type: "number" },
+                    category: {
+                      type: "object",
+                      properties: {
+                        id: { type: "number" },
+                        name: { type: "string" },
+                        slug: { type: "string" },
+                        description: { type: "string" },
+                        active: { type: "boolean" },
+                        createdAt: { type: "string", format: "date-time" },
+                        updatedAt: { type: "string", format: "date-time" },
+                      },
+                    },
+                  },
                 },
-                images: {
-                  type: "array",
-                  items: { type: "string", format: "uri" },
-                },
-                colors: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-                slug: { type: "string" },
-                active: { type: "boolean" },
-                updatedAt: { type: "string", format: "date-time" },
               },
+              total: { type: "number" },
+              page: { type: "number" },
+              limit: { type: "number" },
+              totalPages: { type: "number" },
             },
           },
           400: {
@@ -108,7 +130,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
               id: { type: "number" },
               name: { type: "string" },
               price: { type: "number" },
-              createdAt: { type: "string", format: "date-time" },
+              createdAt: { type: "string" },
               description: { type: "string" },
               stock: { type: "number" },
               sizes: {
@@ -125,7 +147,20 @@ export default async function productRoutes(fastify: FastifyInstance) {
               },
               slug: { type: "string" },
               active: { type: "boolean" },
-              updatedAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string" },
+              categoryId: { type: "number" },
+              category: {
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  name: { type: "string" },
+                  slug: { type: "string" },
+                  description: { type: "string" },
+                  active: { type: "boolean" },
+                  createdAt: { type: "string", format: "date-time" },
+                  updatedAt: { type: "string", format: "date-time" },
+                },
+              },
             },
           },
           400: {
@@ -154,7 +189,15 @@ export default async function productRoutes(fastify: FastifyInstance) {
       schema: {
         tags: ["Products"],
         description: "Cria um novo produto",
-        required: ["name", "description", "price", "stock", "slug", "active"],
+        required: [
+          "name",
+          "description",
+          "price",
+          "stock",
+          "slug",
+          "active",
+          "categoryId",
+        ],
         body: {
           type: "object",
           properties: {
@@ -175,6 +218,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
               items: { type: "string" },
             },
             active: { type: "boolean" },
+            categoryId: { type: "number" },
           },
         },
         response: {
@@ -226,6 +270,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
             price: { type: "number" },
             active: { type: "boolean" },
             stock: { type: "number" },
+            categoryId: { type: "number" },
             colors: {
               type: "array",
               items: { type: "string" },
@@ -248,7 +293,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
               id: { type: "number" },
               name: { type: "string" },
               price: { type: "number" },
-              createdAt: { type: "string", format: "date-time" },
+              createdAt: { type: "string" },
               description: { type: "string" },
               stock: { type: "number" },
               sizes: {
@@ -265,7 +310,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
               },
               slug: { type: "string" },
               active: { type: "boolean" },
-              updatedAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string" },
             },
           },
           400: {
@@ -307,7 +352,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
     {
       schema: {
         tags: ["Products"],
-        description: "Deleta um produto pelo ID",
+        description: "Desativa um produto pelo ID",
         params: {
           type: "object",
           properties: {
@@ -317,7 +362,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
         },
         response: {
           200: {
-            description: "Produto deletado com sucesso",
+            description: "Produto desativado com sucesso",
             type: "object",
             properties: {
               message: { type: "string" },
