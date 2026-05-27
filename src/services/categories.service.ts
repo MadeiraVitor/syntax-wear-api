@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import type { CategoryFilters } from "../types";
+import type { CategoryFilters, CreateCategory } from "../types";
 
 export const getCategories = async (filters: CategoryFilters) => {
   const { search, page = 1, limit = 10 } = filters;
@@ -55,4 +55,20 @@ export const getCategoryById = async (id: number) => {
   }
 
   return category;
+};
+
+export const createCategory = async (data: CreateCategory) => {
+  const existingCategory = await prisma.category.findUnique({
+    where: { slug: data.slug },
+  });
+
+  if (existingCategory) {
+    throw new Error("Slug já existe. Escolha outro nome para a categoria.");
+  }
+
+  const newCategory = await prisma.category.create({
+    data,
+  });
+
+  return newCategory;
 };

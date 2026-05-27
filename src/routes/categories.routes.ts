@@ -1,12 +1,13 @@
 import type { FastifyInstance } from "fastify";
 import {
+  createNewCategory,
   getCategory,
   listCategories,
 } from "../controllers/categories.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 
 export default async function categoryRoutes(fastify: FastifyInstance) {
- // fastify.addHook("onRequest", authenticate);
+  // fastify.addHook("onRequest", authenticate);
 
   fastify.get(
     "/",
@@ -120,5 +121,55 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
       },
     },
     getCategory,
+  );
+
+  fastify.post(
+    "/",
+    {
+      schema: {
+        tags: ["Categories"],
+        description: "Cria uma nova categoria",
+        required: ["name", "active"],
+        body: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+            active: { type: "boolean" },
+          },
+        },
+        response: {
+          201: {
+            description: "Categoria criada com sucesso",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          400: {
+            description: "Requisição inválida",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          401: {
+            description: "Não autorizado",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          500: {
+            description: "Erro interno do servidor",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    createNewCategory,
   );
 }

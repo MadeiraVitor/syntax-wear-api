@@ -31,6 +31,13 @@ export const categoryFiltersSchema = z.object({
   search: z.string().trim().min(1, "Search não pode ser vazio").optional(),
 });
 
+export const createCategorySchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  description: z.string().optional(),
+  slug: z.string().min(1, "Slug é obrigatório"),
+  active: z.boolean(),
+});
+
 export const createProductSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().min(1, "Descrição é obrigatória"),
@@ -54,10 +61,7 @@ export const updateProductSchema = z.object({
   stock: z.coerce.number().int().min(0, "Stock deve ser >= 0").optional(),
   active: z.boolean().optional(),
   images: z.array(z.string()).optional(),
-  categoryId: z.coerce
-    .number()
-    .int()
-    .optional(),
+  categoryId: z.coerce.number().int().optional(),
 });
 
 export const deleteProductSchema = z.object({

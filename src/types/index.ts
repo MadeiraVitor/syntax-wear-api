@@ -5,14 +5,21 @@ export interface ProductFilters {
   maxPrice?: number;
   search?: string;
   categoryId?: number;
-  sortBy?: 'price' | 'name' | 'createdAt';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "price" | "name" | "createdAt";
+  sortOrder?: "asc" | "desc";
 }
 
 export interface CategoryFilters {
   page?: number;
   limit?: number;
   search?: string;
+}
+
+export interface CreateCategory {
+  name: string;
+  description?: string;
+  slug: string;
+  active: boolean;
 }
 
 export interface AuthRequest {
@@ -26,7 +33,7 @@ export interface RegisterRequest extends AuthRequest {
   cpf?: string | undefined;
   birthDate?: string | undefined;
   phone?: string | undefined;
-  role?: 'USER' | 'ADMIN';
+  role?: "USER" | "ADMIN";
 }
 
 export interface CreateProduct {
