@@ -3,6 +3,7 @@ import {
   createNewCategory,
   getCategory,
   listCategories,
+  updateExistingCategory,
 } from "../controllers/categories.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 
@@ -171,5 +172,74 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
       },
     },
     createNewCategory,
+  );
+
+  fastify.put(
+    "/:id",
+    {
+      schema: {
+        tags: ["Categories"],
+        description: "Atualiza uma categoria pelo ID",
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "number", description: "ID da categoria" },
+          },
+          required: ["id"],
+        },
+        body: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            description: { type: "string" },
+            active: { type: "boolean" },
+          },
+        },
+        response: {
+          200: {
+            description: "Categoria atualizada com sucesso",
+            type: "object",
+            properties: {
+              id: { type: "number" },
+              name: { type: "string" },
+              slug: { type: "string" },
+              description: { type: "string" },
+              active: { type: "boolean" },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" },
+            },
+          },
+          400: {
+            description: "Requisição inválida",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          401: {
+            description: "Não autorizado",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          404: {
+            description: "Categoria não encontrada",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          500: {
+            description: "Erro interno do servidor",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    updateExistingCategory,
   );
 }
