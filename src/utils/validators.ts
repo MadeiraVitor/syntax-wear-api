@@ -68,6 +68,13 @@ export const createOrderSchema = z.object({
   paymentMethod: z.string().min(1, "Método de pagamento é obrigatório"),
 });
 
+export const updateOrderSchema = z.object({
+  status: z
+    .enum(["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"])
+    .optional(),
+  shippingAddress: shippingAddressSchema.optional(),
+});
+
 export const createCategorySchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().optional(),

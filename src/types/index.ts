@@ -48,6 +48,11 @@ export interface CreateOrder {
   paymentMethod: string;
 }
 
+export interface UpdateOrder {
+  status?: "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  shippingAddress?: ShippingAddress;
+}
+
 export interface CreateCategory {
   name: string;
   description?: string;
