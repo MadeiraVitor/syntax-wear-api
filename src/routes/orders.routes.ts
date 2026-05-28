@@ -1,5 +1,9 @@
 import type { FastifyInstance } from "fastify";
-import { getOrder, listOrders } from "../controllers/orders.controller";
+import {
+  createNewOrder,
+  getOrder,
+  listOrders,
+} from "../controllers/orders.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 
 export default async function orderRoutes(fastify: FastifyInstance) {
@@ -118,6 +122,92 @@ export default async function orderRoutes(fastify: FastifyInstance) {
       },
     },
     listOrders,
+  );
+
+  fastify.post(
+    "/",
+    {
+      schema: {
+        tags: ["Orders"],
+        description: "Cria um novo pedido",
+        security: [{ bearerAuth: [] }],
+        body: {
+          type: "object",
+          required: ["items", "shippingAddress", "paymentMethod"],
+          properties: {
+            userId: { type: "number" },
+            items: {
+              type: "array",
+              minItems: 1,
+              items: {
+                type: "object",
+                required: ["productId", "quantity"],
+                properties: {
+                  productId: { type: "number" },
+                  quantity: { type: "number" },
+                  size: { type: "string" },
+                },
+              },
+            },
+            shippingAddress: {
+              type: "object",
+              required: [
+                "cep",
+                "street",
+                "number",
+                "neighborhood",
+                "city",
+                "state",
+                "country",
+              ],
+              properties: {
+                cep: { type: "string" },
+                street: { type: "string" },
+                number: { type: "string" },
+                complement: { type: "string" },
+                neighborhood: { type: "string" },
+                city: { type: "string" },
+                state: { type: "string" },
+                country: { type: "string" },
+              },
+            },
+            paymentMethod: { type: "string" },
+          },
+        },
+        response: {
+          201: {
+            description: "Pedido criado com sucesso",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              orderId: { type: "number" },
+            },
+          },
+          400: {
+            description: "Requisição inválida",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          401: {
+            description: "Não autorizado",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          500: {
+            description: "Erro interno do servidor",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    createNewOrder,
   );
 
   fastify.get(

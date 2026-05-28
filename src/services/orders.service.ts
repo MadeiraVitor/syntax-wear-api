@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import type { OrderFilters } from "../types";
+import type { CreateOrder, OrderFilters } from "../types";
 
 export const getOrders = async (filters: OrderFilters) => {
   const { status, userId, startDate, endDate, page = 1, limit = 10 } = filters;
@@ -85,6 +85,99 @@ export const getOrderById = async (id: number) => {
   if (!order) {
     throw new Error("Pedido não encontrado");
   }
+
+  return order;
+};
+
+export const createOrder = async (data: CreateOrder) => {
+  const productIds = data.items.map((item) => item.productId);
+
+  const products = await prisma.product.findMany({
+    where: {
+      id: { in: productIds },
+    },
+  });
+
+  const productById = new Map(products.map((product) => [product.id, product]));
+
+  const itemsWithSnapshot = data.items.map((item) => {
+    const product = productById.get(item.productId);
+
+    if (!product) {
+      throw new Error(`Produto com ID ${item.productId} não encontrado`);
+    }
+
+    if (!product.active) {
+      throw new Error(`Produto ${product.name} está inativo`);
+    }
+
+    if (product.stock < item.quantity) {
+      throw new Error(
+        `Estoque insuficiente para ${product.name}. Disponível: ${product.stock}, solicitado: ${item.quantity}`,
+      );
+    }
+
+    const sizes = Array.isArray(product.sizes)
+      ? (product.sizes as string[])
+      : [];
+
+    if (sizes.length > 0 && !item.size) {
+      throw new Error(`Produto ${product.name} requer seleção de tamanho`);
+    }
+
+    if (item.size && sizes.length > 0 && !sizes.includes(item.size)) {
+      throw new Error(
+        `Tamanho ${item.size} não disponível para ${product.name}`,
+      );
+    }
+
+    return {
+      item,
+      priceSnapshot: Number(product.price),
+    };
+  });
+
+  const total = itemsWithSnapshot.reduce(
+    (sum, current) => sum + current.priceSnapshot * current.item.quantity,
+    0,
+  );
+
+  const order = await prisma.$transaction(async (tx) => {
+    const newOrder = await tx.order.create({
+      data: {
+        userId: data.userId,
+        total,
+        status: "PENDING",
+        shippingAddress: data.shippingAddress as any,
+        paymentMethod: data.paymentMethod,
+      },
+    });
+
+    await Promise.all(
+      itemsWithSnapshot.map(({ item, priceSnapshot }) =>
+        tx.orderItem.create({
+          data: {
+            orderId: newOrder.id,
+            productId: item.productId,
+            price: priceSnapshot,
+            quantity: item.quantity,
+            size: item.size,
+          },
+        }),
+      ),
+    );
+
+    await Promise.all(
+      itemsWithSnapshot.map(({ item }) =>
+        tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } },
+        }),
+      ),
+    );
+
+    return newOrder;
+  });
 
   return order;
 };

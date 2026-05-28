@@ -24,6 +24,30 @@ export interface OrderFilters {
   endDate?: string;
 }
 
+export interface ShippingAddress {
+  cep: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  country: string;
+}
+
+export interface CreateOrderItem {
+  productId: number;
+  quantity: number;
+  size?: string;
+}
+
+export interface CreateOrder {
+  userId?: number;
+  items: CreateOrderItem[];
+  shippingAddress: ShippingAddress;
+  paymentMethod: string;
+}
+
 export interface CreateCategory {
   name: string;
   description?: string;
