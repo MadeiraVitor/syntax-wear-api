@@ -31,6 +31,17 @@ export const categoryFiltersSchema = z.object({
   search: z.string().trim().min(1, "Search não pode ser vazio").optional(),
 });
 
+export const orderFiltersSchema = z.object({
+  page: z.coerce.number().int().min(1, "Page deve ser >= 1").optional(),
+  limit: z.coerce.number().int().min(1, "Limit deve ser >= 1").optional(),
+  status: z
+    .enum(["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"])
+    .optional(),
+  userId: z.coerce.number().int().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
+
 export const createCategorySchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().optional(),
