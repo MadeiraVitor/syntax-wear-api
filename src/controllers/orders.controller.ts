@@ -2,12 +2,14 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { CreateOrder, OrderFilters, UpdateOrder } from "../types";
 import {
   createOrder,
+  deleteOrder,
   getOrderById,
   getOrders,
   updateOrder,
 } from "../services/orders.service";
 import {
   createOrderSchema,
+  deleteOrderSchema,
   orderFiltersSchema,
   updateOrderSchema,
 } from "../utils/validators";
@@ -53,4 +55,16 @@ export const updateExistingOrder = async (
   const order = await updateOrder(Number(id), validate);
 
   reply.status(200).send(order);
+};
+
+export const deleteExistingOrder = async (
+  request: FastifyRequest<{ Params: { id: number } }>,
+  reply: FastifyReply,
+) => {
+  const { id } = request.params;
+  const validate = deleteOrderSchema.parse({ id });
+
+  await deleteOrder(validate.id);
+
+  reply.status(200).send({ message: "Pedido cancelado com sucesso" });
 };

@@ -75,6 +75,10 @@ export const updateOrderSchema = z.object({
   shippingAddress: shippingAddressSchema.optional(),
 });
 
+export const deleteOrderSchema = z.object({
+  id: z.number().int().min(1, "ID é obrigatório"),
+});
+
 export const createCategorySchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().optional(),

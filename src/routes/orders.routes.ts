@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import {
   createNewOrder,
+  deleteExistingOrder,
   getOrder,
   listOrders,
   updateExistingOrder,
@@ -135,6 +136,62 @@ export default async function orderRoutes(fastify: FastifyInstance) {
       },
     },
     listOrders,
+  );
+
+  fastify.delete(
+    "/:id",
+    {
+      schema: {
+        tags: ["Orders"],
+        description: "Cancela um pedido pelo ID",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "number", description: "ID do pedido" },
+          },
+          required: ["id"],
+        },
+        response: {
+          200: {
+            description: "Pedido cancelado com sucesso",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          400: {
+            description: "Requisição inválida",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          401: {
+            description: "Não autorizado",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          404: {
+            description: "Pedido não encontrado",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          500: {
+            description: "Erro interno do servidor",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    deleteExistingOrder,
   );
 
   fastify.put(
