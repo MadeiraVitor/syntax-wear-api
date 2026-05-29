@@ -19,7 +19,6 @@ export default async function orderRoutes(fastify: FastifyInstance) {
         tags: ["Orders"],
         description: "Lista pedidos com filtros opcionais",
         security: [{ bearerAuth: [] }],
-        onRequest: [requireAdmin],
         querystring: {
           type: "object",
           properties: {

@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { CreateOrder, OrderFilters, UpdateOrder } from "../types";
+import { prisma } from "../../lib/prisma";
 import {
   createOrder,
   deleteOrder,
@@ -14,12 +15,40 @@ import {
   updateOrderSchema,
 } from "../utils/validators";
 
+type JwtPayload = {
+  userId?: number;
+};
+
+const getUserContext = async (request: FastifyRequest) => {
+  const payload = (request as FastifyRequest & { user?: JwtPayload }).user;
+  const userId = payload?.userId;
+
+  if (!userId) {
+    throw new Error("Usuário não autenticado");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  return {
+    userId,
+    isAdmin: user?.role === "ADMIN",
+  };
+};
+
 export const listOrders = async (
   request: FastifyRequest<{ Querystring: OrderFilters }>,
   reply: FastifyReply,
 ) => {
   const filters = orderFiltersSchema.parse(request.query);
-  const result = await getOrders(filters as OrderFilters);
+  const { userId, isAdmin } = await getUserContext(request);
+  const effectiveFilters: OrderFilters = {
+    ...filters,
+    userId: isAdmin ? filters.userId : userId,
+  };
+  const result = await getOrders(effectiveFilters);
   reply.send(result);
 };
 
@@ -27,7 +56,8 @@ export const getOrder = async (
   request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply,
 ) => {
-  const order = await getOrderById(Number(request.params.id));
+  const { userId, isAdmin } = await getUserContext(request);
+  const order = await getOrderById(Number(request.params.id), userId, isAdmin);
   reply.status(200).send(order);
 };
 
@@ -52,7 +82,8 @@ export const updateExistingOrder = async (
   const body = request.body;
   const validate = updateOrderSchema.parse(body);
 
-  const order = await updateOrder(Number(id), validate);
+  const { userId, isAdmin } = await getUserContext(request);
+  const order = await updateOrder(Number(id), validate, userId, isAdmin);
 
   reply.status(200).send(order);
 };
@@ -64,7 +95,8 @@ export const deleteExistingOrder = async (
   const { id } = request.params;
   const validate = deleteOrderSchema.parse({ id });
 
-  await deleteOrder(validate.id);
+  const { userId, isAdmin } = await getUserContext(request);
+  await deleteOrder(validate.id, userId, isAdmin);
 
   reply.status(200).send({ message: "Pedido cancelado com sucesso" });
 };

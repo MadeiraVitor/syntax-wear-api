@@ -65,7 +65,11 @@ export const getOrders = async (filters: OrderFilters) => {
   }
 };
 
-export const getOrderById = async (id: number) => {
+export const getOrderById = async (
+  id: number,
+  requestingUserId: number,
+  isAdmin: boolean,
+) => {
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
@@ -84,6 +88,10 @@ export const getOrderById = async (id: number) => {
 
   if (!order) {
     throw new Error("Pedido não encontrado");
+  }
+
+  if (!isAdmin && (!order.userId || order.userId !== requestingUserId)) {
+    throw new Error("Você não tem permissão para acessar este pedido");
   }
 
   return order;
@@ -182,13 +190,25 @@ export const createOrder = async (data: CreateOrder) => {
   return order;
 };
 
-export const updateOrder = async (id: number, data: UpdateOrder) => {
+export const updateOrder = async (
+  id: number,
+  data: UpdateOrder,
+  requestingUserId: number,
+  isAdmin: boolean,
+) => {
   const existingOrder = await prisma.order.findUnique({
     where: { id },
   });
 
   if (!existingOrder) {
     throw new Error("Pedido não encontrado");
+  }
+
+  if (
+    !isAdmin &&
+    (!existingOrder.userId || existingOrder.userId !== requestingUserId)
+  ) {
+    throw new Error("Você não tem permissão para acessar este pedido");
   }
 
   const updatedOrder = await prisma.order.update({
@@ -216,13 +236,24 @@ export const updateOrder = async (id: number, data: UpdateOrder) => {
   return updatedOrder;
 };
 
-export const deleteOrder = async (id: number) => {
+export const deleteOrder = async (
+  id: number,
+  requestingUserId: number,
+  isAdmin: boolean,
+) => {
   const existingOrder = await prisma.order.findUnique({
     where: { id },
   });
 
   if (!existingOrder) {
     throw new Error("Pedido não encontrado");
+  }
+
+  if (
+    !isAdmin &&
+    (!existingOrder.userId || existingOrder.userId !== requestingUserId)
+  ) {
+    throw new Error("Você não tem permissão para acessar este pedido");
   }
 
   await prisma.order.update({
