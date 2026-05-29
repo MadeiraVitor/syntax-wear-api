@@ -66,12 +66,12 @@ export const updateExistingCategory = async (
 };
 
 export const deleteExistingCategory = async (
-  request: FastifyRequest<{ Params: { id: number } }>,
+  request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply,
 ) => {
   const { id } = request.params;
 
-  const validate = deleteCategorySchema.parse({ id });
+  const validate = deleteCategorySchema.parse({ id: Number(id) });
 
   await deleteCategory(validate.id);
 

@@ -186,7 +186,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
         params: {
           type: "object",
           properties: {
-            id: { type: "number", description: "ID da categoria" },
+            id: { type: "string", description: "ID da categoria" },
           },
           required: ["id"],
         },
@@ -246,7 +246,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
     updateExistingCategory,
   );
 
-  fastify.delete<{ Params: { id: number } }>(
+  fastify.delete<{ Params: { id: string } }>(
     "/:id",
     {
       onRequest: [requireAdmin],
@@ -256,7 +256,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
         params: {
           type: "object",
           properties: {
-            id: { type: "number", description: "ID da categoria" },
+            id: { type: "string", description: "ID da categoria" },
           },
           required: ["id"],
         },

@@ -71,7 +71,7 @@ export const deleteExistingProduct = async (
 ) => {
   const { id } = request.params;
 
-  const validate = deleteProductSchema.parse({ id });
+  const validate = deleteProductSchema.parse({ id: Number(id) });
 
   await deleteProduct(validate.id);
 
