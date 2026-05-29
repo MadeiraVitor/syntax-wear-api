@@ -1,6 +1,7 @@
 import Fastify, { type FastifyError } from "fastify";
 import "dotenv/config";
 import fastifyCors from "@fastify/cors";
+import fastifyCsrf from "@fastify/csrf-protection";
 import fastifyHelmet from "@fastify/helmet";
 import productRoutes from "./routes/products.routes";
 import swagger from "@fastify/swagger";
@@ -15,7 +16,7 @@ const PORT = parseInt(process.env.PORT ?? "3000");
 
 const fastify = Fastify({
   logger: {
-    level: process.env.LOG_LEVEL || 'info',
+    level: process.env.LOG_LEVEL || "info",
     serializers: {
       req(request) {
         return {
@@ -27,9 +28,9 @@ const fastify = Fastify({
         return {
           statusCode: reply.statusCode,
         };
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 fastify.register(jwt, {
@@ -40,6 +41,8 @@ fastify.register(fastifyCors, {
   origin: true,
   credentials: true,
 });
+
+fastify.register(fastifyCsrf);
 
 fastify.register(fastifyHelmet, {
   contentSecurityPolicy: false,

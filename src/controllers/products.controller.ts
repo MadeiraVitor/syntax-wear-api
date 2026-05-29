@@ -13,7 +13,7 @@ import {
   productFiltersSchema,
   updateProductSchema,
 } from "../utils/validators";
-import slugify from "slugify";
+import { generateSlug } from "../utils/slug";
 
 export const listProducts = async (
   request: FastifyRequest<{ Querystring: ProductFilters }>,
@@ -38,11 +38,7 @@ export const createNewProduct = async (
 ) => {
   const body = request.body;
 
-  body.slug = slugify(body.name, {
-    lower: true,
-    strict: true,
-    locale: "pt",
-  });
+  body.slug = generateSlug(body.name);
 
   const validate = createProductSchema.parse(body);
 
@@ -61,11 +57,7 @@ export const updateExistingProduct = async (
   const validate = updateProductSchema.parse(body);
 
   if (validate.name) {
-    validate.slug = slugify(validate.name, {
-      lower: true,
-      strict: true,
-      locale: "pt",
-    });
+    validate.slug = generateSlug(validate.name);
   }
 
   const product = await updateProduct(Number(id), validate);
