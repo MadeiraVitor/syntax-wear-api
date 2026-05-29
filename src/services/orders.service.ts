@@ -36,18 +36,6 @@ export const getOrders = async (filters: OrderFilters) => {
         skip,
         take,
         orderBy: { createdAt: "desc" },
-        include: {
-          user: true,
-          items: {
-            include: {
-              product: {
-                include: {
-                  category: true,
-                },
-              },
-            },
-          },
-        },
       }),
       prisma.order.count({ where }),
     ]);
