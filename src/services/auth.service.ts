@@ -27,8 +27,9 @@ export const registerUser = async (payload: RegisterRequest) => {
         : {}),
     },
   });
+  const { password, ...userWithoutPassword } = newUser;
 
-  return newUser;
+  return userWithoutPassword;
 };
 
 export const loginUser = async (data: AuthRequest) => {
@@ -46,5 +47,7 @@ export const loginUser = async (data: AuthRequest) => {
     throw new Error("Senha incorreta");
   }
 
-  return user;
+  const { password, ...userWithoutPassword } = user;
+
+  return userWithoutPassword;
 };
