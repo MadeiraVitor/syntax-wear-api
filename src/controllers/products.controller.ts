@@ -74,7 +74,7 @@ export const updateExistingProduct = async (
 };
 
 export const deleteExistingProduct = async (
-  request: FastifyRequest<{ Params: { id: number } }>,
+  request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply,
 ) => {
   const { id } = request.params;

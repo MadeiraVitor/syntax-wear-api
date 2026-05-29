@@ -7,9 +7,10 @@ import {
   updateExistingOrder,
 } from "../controllers/orders.controller";
 import { authenticate } from "../middlewares/auth.middleware";
+import { requireAdmin } from "../middlewares/admin.middleware";
 
 export default async function orderRoutes(fastify: FastifyInstance) {
-  //fastify.addHook("onRequest", authenticate);
+  fastify.addHook("onRequest", authenticate);
 
   fastify.get(
     "/",
@@ -18,6 +19,7 @@ export default async function orderRoutes(fastify: FastifyInstance) {
         tags: ["Orders"],
         description: "Lista pedidos com filtros opcionais",
         security: [{ bearerAuth: [] }],
+        onRequest: [requireAdmin],
         querystring: {
           type: "object",
           properties: {
@@ -201,6 +203,7 @@ export default async function orderRoutes(fastify: FastifyInstance) {
         tags: ["Orders"],
         description: "Atualiza status ou endereço de entrega do pedido",
         security: [{ bearerAuth: [] }],
+        onRequest: [requireAdmin],
         params: {
           type: "object",
           properties: {

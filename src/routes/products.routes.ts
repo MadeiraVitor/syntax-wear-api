@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import type { CreateProduct, UpdateProduct } from "../types";
 import {
   createNewProduct,
   deleteExistingProduct,
@@ -6,10 +7,10 @@ import {
   listProducts,
   updateExistingProduct,
 } from "../controllers/products.controller";
-import { authenticate } from "../middlewares/auth.middleware";
+import { requireAdmin } from "../middlewares/admin.middleware";
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  //fastify.addHook("onRequest", authenticate);
+
   fastify.get(
     "/",
     {
@@ -183,21 +184,13 @@ export default async function productRoutes(fastify: FastifyInstance) {
     getProduct,
   );
 
-  fastify.post(
+  fastify.post<{ Body: CreateProduct }>(
     "/",
     {
+      onRequest: [requireAdmin],
       schema: {
         tags: ["Products"],
         description: "Cria um novo produto",
-        required: [
-          "name",
-          "description",
-          "price",
-          "stock",
-          "slug",
-          "active",
-          "categoryId",
-        ],
         body: {
           type: "object",
           properties: {
@@ -220,6 +213,12 @@ export default async function productRoutes(fastify: FastifyInstance) {
             active: { type: "boolean" },
             categoryId: { type: "number" },
           },
+          required: [
+            "name",
+            "description",
+            "price",
+            "categoryId",
+          ],
         },
         response: {
           201: {
@@ -249,9 +248,10 @@ export default async function productRoutes(fastify: FastifyInstance) {
     createNewProduct,
   );
 
-  fastify.put(
+  fastify.put<{ Params: { id: string }; Body: UpdateProduct }>(
     "/:id",
     {
+      onRequest: [requireAdmin],
       schema: {
         tags: ["Products"],
         description: "Atualiza um produto pelo ID",
@@ -347,16 +347,17 @@ export default async function productRoutes(fastify: FastifyInstance) {
     updateExistingProduct,
   );
 
-  fastify.delete(
+  fastify.delete<{ Params: { id: string } }>(
     "/:id",
     {
+      onRequest: [requireAdmin],
       schema: {
         tags: ["Products"],
         description: "Desativa um produto pelo ID",
         params: {
           type: "object",
           properties: {
-            id: { type: "number", description: "ID do produto" },
+            id: { type: "string", description: "ID do produto" },
           },
           required: ["id"],
         },
