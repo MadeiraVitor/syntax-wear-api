@@ -57,12 +57,7 @@ export async function buildApp(): Promise<FastifyInstance> {
         description: "API para o e-commerce SyntaxWear",
         version: "1.0.0",
       },
-      servers: [
-        {
-          url: `http://localhost:${PORT}`,
-          description: "Servidor de desenvolvimento local",
-        },
-      ],
+      servers: [],
       components: {
         securitySchemes: {
           bearerAuth: {
