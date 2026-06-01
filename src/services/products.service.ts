@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../utils/prisma";
 import type { CreateProduct, ProductFilters, UpdateProduct } from "../types";
 
 export const getProducts = async (filter: ProductFilters) => {

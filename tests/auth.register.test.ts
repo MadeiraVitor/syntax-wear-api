@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { buildApp } from "../src/app";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../src/utils/prisma";
 import { FastifyInstance } from "fastify";
 
 describe("Auth Routes - Register", () => {

@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../utils/prisma";
 import type { AuthRequest, RegisterRequest } from "../types";
 import bcrypt from "bcrypt";
 

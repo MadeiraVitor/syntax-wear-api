@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { beforeAll, afterAll } from "vitest";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../src/utils/prisma";
 
 // Executado antes de todos os testes
 beforeAll(async () => {

@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../utils/prisma";
 import type { CategoryFilters, CreateCategory, UpdateCategory } from "../types";
 
 export const getCategories = async (filters: CategoryFilters) => {

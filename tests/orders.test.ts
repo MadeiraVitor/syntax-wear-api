@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { FastifyInstance } from "fastify";
 import { buildApp } from "../src/app";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../src/utils/prisma";
 
 // Mock do bcrypt
 vi.mock("bcrypt", () => ({
@@ -12,7 +12,7 @@ vi.mock("bcrypt", () => ({
 }));
 
 // Mock do Prisma
-vi.mock("../lib/prisma", () => ({
+vi.mock("../src/utils/prisma", () => ({
 	prisma: {
 		user: {
 			create: vi.fn(),

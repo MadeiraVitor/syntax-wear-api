@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { CreateOrder, OrderFilters, UpdateOrder } from "../types";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../utils/prisma";
 import {
   createOrder,
   deleteOrder,

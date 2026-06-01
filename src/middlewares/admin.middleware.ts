@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../utils/prisma";
 
 export const requireAdmin = async (
   request: FastifyRequest,

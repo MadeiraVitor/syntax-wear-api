@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../utils/prisma";
 import type { CreateOrder, OrderFilters, UpdateOrder } from "../types";
 
 export const getOrders = async (filters: OrderFilters) => {
