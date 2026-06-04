@@ -25,6 +25,7 @@ export default async function productRoutes(fastify: FastifyInstance) {
             minPrice: { type: "number", description: "Preço mínimo" },
             maxPrice: { type: "number", description: "Preço máximo" },
             search: { type: "string", description: "Busca por nome/descrição" },
+            categoryId: { type: "number", description: "ID da categoria" },
             sortBy: {
               type: "string",
               enum: ["price", "name", "createdAt"],
@@ -69,18 +70,6 @@ export default async function productRoutes(fastify: FastifyInstance) {
                     active: { type: "boolean" },
                     updatedAt: { type: "string", format: "date-time" },
                     categoryId: { type: "number" },
-                    category: {
-                      type: "object",
-                      properties: {
-                        id: { type: "number" },
-                        name: { type: "string" },
-                        slug: { type: "string" },
-                        description: { type: "string" },
-                        active: { type: "boolean" },
-                        createdAt: { type: "string", format: "date-time" },
-                        updatedAt: { type: "string", format: "date-time" },
-                      },
-                    },
                   },
                 },
               },
