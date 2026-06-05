@@ -1,6 +1,7 @@
 import { prisma } from "../utils/prisma";
 import type { AuthRequest, RegisterRequest } from "../types";
 import bcrypt from "bcrypt";
+import { FastifyReply } from "fastify";
 
 export const registerUser = async (payload: RegisterRequest) => {
   const existingUser = await prisma.user.findUnique({
@@ -32,19 +33,21 @@ export const registerUser = async (payload: RegisterRequest) => {
   return userWithoutPassword;
 };
 
-export const loginUser = async (data: AuthRequest) => {
+export const loginUser = async (data: AuthRequest, reply: FastifyReply) => {
   const user = await prisma.user.findUnique({
     where: { email: data.email },
   });
 
   if (!user) {
-    throw new Error("Usuário não encontrado");
+    reply.status(409).send({ message: "As credenciais estão incorretas" });
+    return;
   }
 
   const isPasswordValid = await bcrypt.compare(data.password, user.password);
 
   if (!isPasswordValid) {
-    throw new Error("Senha incorreta");
+    reply.status(409).send({ message: "As credenciais estão incorretas" });
+    return;
   }
 
   const { password, ...userWithoutPassword } = user;

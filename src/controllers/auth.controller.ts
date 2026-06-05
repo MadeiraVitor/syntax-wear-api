@@ -22,7 +22,9 @@ export const register = async (
 export const login = async (request: FastifyRequest, reply: FastifyReply) => {
   const validation = loginSchema.parse(request.body as AuthRequest);
 
-  const user = await loginUser(validation);
+  const user = await loginUser(validation, reply);
+
+  if (!user) return;
 
   const token = request.server.jwt.sign({ userId: user.id });
 
