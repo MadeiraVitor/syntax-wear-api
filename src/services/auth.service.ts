@@ -4,13 +4,21 @@ import bcrypt from "bcrypt";
 import { FastifyReply } from "fastify";
 import { OAuth2Client } from "google-auth-library";
 
-export const registerUser = async (payload: RegisterRequest) => {
-  const existingUser = await prisma.user.findUnique({
-    where: { email: payload.email },
+export const registerUser = async (payload: RegisterRequest, reply: FastifyReply) => {
+  const existingUser = await prisma.user.findFirst({
+    where: { 
+      OR: [{ email: payload.email }, { cpf: payload.cpf }],
+    },
   });
 
   if (existingUser) {
-    throw new Error("Email já está em uso");
+    if (existingUser.email === payload.email) {
+      return reply.status(409).send({ message: "Email já está em uso" });
+    }
+
+    if (existingUser.cpf === payload.cpf) {
+      return reply.status(409).send({ message: "CPF já cadastrado" });
+    }
   }
 
   const hashedPassword = await bcrypt.hash(payload.password, 10);
