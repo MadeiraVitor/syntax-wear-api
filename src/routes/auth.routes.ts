@@ -4,6 +4,7 @@ import {
   login,
   profile,
   register,
+  signOut,
 } from "../controllers/auth.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 
@@ -105,5 +106,18 @@ export default async function authRoutes(fastify: FastifyInstance) {
       },
     },
     googleLogin,
+  );
+
+  fastify.post(
+    "/signout",
+    {
+      preHandler: [authenticate],
+      schema: {
+        tags: ["Auth"],
+        description: "Faz logout do usuário removendo o cookie JWT",
+        security: [{ bearerAuth: [] }],
+      },
+    },
+    signOut,
   );
 }
